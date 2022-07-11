@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-
+import './css/04.css'
 export default class App extends Component {
   constructor(){
     super()
@@ -13,14 +13,30 @@ export default class App extends Component {
   }
   myref= React.createRef() // 返回一个ref对象
   render() {
-    const list = this.state.listdata.map(item=><li key={item.id}>{item.text}</li>)
+    // const list = this.state.listdata.map(item=><li key={item.id}>{item.text}</li>)
     return (
       <div>
         TodoList案例
         <hr></hr>
         <input ref={this.myref}></input>
         <button onClick={this.handleClick}>add</button> 
-        <ul> {list}</ul>
+        {/* <ul> {list}</ul> */}
+        <ul>
+          {
+            this.state.listdata.map((item,index)=>
+              <li key={item.id}>
+                {/*item.text*/}
+                {/*富文本展示  dangerouslySetInnerHTML={{__html:内容}}*/} 
+                <span dangerouslySetInnerHTML={{__html:item.text}}></span>
+                {/* <button onClick={this.handleDelClick.bind(this,index)}>del</button> */}
+                <button onClick={()=>this.handleDelClick(index)}>del</button>
+              </li>
+              )
+          }
+        </ul>
+        {/* {this.state.listdata.length===0?<div>暂无数据</div>:null}  */}
+        {/* {this.state.listdata.length===0&&<div>暂无数据</div>}  */}
+        <div className={this.state.listdata.length===0?'':'hidden'}>暂无数据</div>
       </div>
     )
   }
@@ -42,5 +58,17 @@ export default class App extends Component {
       listdata:newlist
     })
     console.log("listdata",this.state.listdata)
+    // 清空输入框
+    this.myref.current.value = ""
+  }
+  handleDelClick(index){
+    console.log('del')
+    // 不要直接修改状态，会造成不可预期的后果
+    const list = this.state.listdata.concat()
+    list.splice(index,1)
+    this.setState({
+      listdata:list
+    })
+
   }
 }

@@ -9,7 +9,17 @@ import './01-base/css/04.css' // y引入外部css样式
 // import App from './01-base/06-eventbind.js'
 // import App from './01-base/08-state.js'
 // import App from './01-base/09-render.js'
-import App from './01-base/10-todolist.js'
+// import App from './01-base/10-todolist.js'
+// import App from './01-base/11-Action.js'
+// import App from './01-base/12-setState-Syncawait.js'
+// import App from './01-base/13-betterScroll.js'
+// import App from './01-base/14-betterScroll.js'
+// import App from './01-base/15-props.js'
+// import App from './01-base/16-propsFun.js'
+// import App from './01-base/17-propsVSstate.js'
+// import App from './01-base/18-NameForm.js'
+// import App from './02-advanced/01-ChildPropsParent.js'
+import App from './02-advanced/02-unControlComponent.js'
 
 // ReactDOM.render(
   // <div>
@@ -28,10 +38,10 @@ import App from './01-base/10-todolist.js'
 // )
 ReactDOM.render(
   // 严格模式
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  // <App />,
+  // <React.StrictMode>
+  //   <App />
+  // </React.StrictMode>,
+  <App />,
     document.getElementById('root')
 )
 
