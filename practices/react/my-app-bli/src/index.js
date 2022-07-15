@@ -1,5 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import './01-base/css/04.css' // y引入外部css样式
 // import './01-base/01-class' // ES6 引入自动加载 
 // import App from './01-base/01-class'
@@ -40,7 +41,24 @@ import './01-base/css/04.css' // y引入外部css样式
 // import App from './02-advanced/22-getSnapshotBeforeUpdate.js'
 // import App from './02-advanced/23-getSnapshotBeforeUpdateEx.js'
 // import App from './02-advanced/25-swiper-Sync.js'
-import App from './02-advanced/26-swiper-Async.js'
+// import App from './02-advanced/26-swiper-Async.js'
+// import App from './02-advanced/27-swiperCom.js'
+// import App from './03-hooks/01-useState.js'
+// import App from './03-hooks/02-todolist.js'
+// import App from './03-hooks/03-useEffect.js'
+// import App from './03-hooks/04-useEffect2.js'
+// import App from './03-hooks/05-useEffect-exm.js'
+// import App from './03-hooks/06-useEffect3.js'
+// import App from './03-hooks/07-useCallback1.js'
+// import App from './03-hooks/08-useCallback2.js'
+// import App from './03-hooks/09-useMemo.js'
+// import App from './03-hooks/10-useRef.jss'
+// import App from './03-hooks/11-useRef2.js'
+// import App from './03-hooks/12-useContext.js'
+// import App from './03-hooks/14-useReducer2.js'
+// import App from './03-hooks/15-useReducer3.js'
+// import App from './03-hooks/16-customHook.js'
+import App from './04-router/App.js';
 
 // ReactDOM.render(
   // <div>
@@ -57,12 +75,55 @@ import App from './02-advanced/26-swiper-Async.js'
 // React.createElement('div',{id:'app',className:'bbb'},'内容'),
 //   document.getElementById('root')
 // )
-ReactDOM.render(
-  // 严格模式
-  // <React.StrictMode>
-  //   <App />
-  // </React.StrictMode>,
-  <App />,
-    document.getElementById('root')
-)
+
+// React17版本
+// ReactDOM.render(
+//   // 严格模式
+//   // <React.StrictMode>
+//   //   <App />
+//   // </React.StrictMode>,
+//   <App />,
+//     document.getElementById('root')
+// )
+
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+import Expenses from './04-router/router/expenses'
+import Invoices from './04-router/router/invoices';
+import Invoice from './04-router/router/invoice';
+const root = ReactDOM.createRoot(document.getElementById('root'));
+// root.render(<App/>);
+root.render(
+  <BrowserRouter>
+ <Routes>
+  <Route path="/" element={<App />}>
+    <Route path="expenses" element={<Expenses />} />
+    <Route path="invoices" element={<Invoices />} >
+      {/**Index Routes */}
+      <Route
+      index
+      element={
+        <main style={{ padding: "1rem" }}>
+        <p>Select an invoice</p>
+      </main>
+      }
+      />
+      <Route path=":invoiceId" element={<Invoice />}/>
+    </Route>
+    {/* 精确匹配 The "*" has special meaning here. It will match only when no other routes do. */}
+    <Route
+      path="*"
+      element={
+        <main style={{ padding: "1rem" }}>
+          <p>There's nothing here!</p>
+        </main>
+      }
+    />
+  </Route>
+</Routes>
+  </BrowserRouter>
+);
 
