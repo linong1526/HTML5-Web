@@ -1,31 +1,21 @@
 import React, { Component } from 'react'
-// import MRouter from './router/IndexRouter'
-import {Link,Outlet} from 'react-router-dom'
+import MRouter from './router/IndexRouter'
+import Tabbar from './component/Tabbar'
 export default class App extends Component {
     render() {
         return (
-           <div>
-                {/* 其他的内容 */}
-                {/* <MRouter></MRouter> */}
-                <h1>Bookkeeper</h1>
-                <nav  style={{
-                    borderBottom: "solid 1px",
-                    paddingBottom: "1rem",
-                  }}>
-                  <Link to="/invoices">Invoices</Link> |{" "}
-                  <Link to="/expenses">Expenses</Link>
-                  </nav>
-                  <Outlet />
-          </div>
+          <>
+                {/* 其他的内容  V5 不再支持子组件*/}
+                <MRouter>
+                  <Tabbar></Tabbar>
+                </MRouter>
+          </>
         )
     }
 }
 
 /*
- /films ===>Films
- /cinemas ===>Cinemas
- /center ===> Center
-
-
- 
+  /films ===>Films
+  /cinemas ===>Cinemas
+  /center ===> Center
 */

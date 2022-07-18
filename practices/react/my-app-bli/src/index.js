@@ -58,7 +58,7 @@ import './01-base/css/04.css' // y引入外部css样式
 // import App from './03-hooks/14-useReducer2.js'
 // import App from './03-hooks/15-useReducer3.js'
 // import App from './03-hooks/16-customHook.js'
-import App from './04-router/App.js';
+// import App from './04-router/App.js';
 
 // ReactDOM.render(
   // <div>
@@ -86,44 +86,66 @@ import App from './04-router/App.js';
 //     document.getElementById('root')
 // )
 
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from "react-router-dom";
-import Expenses from './04-router/router/expenses'
-import Invoices from './04-router/router/invoices';
-import Invoice from './04-router/router/invoice';
+// import {
+//   BrowserRouter,
+//   Routes,
+//   Route,
+// } from "react-router-dom";
+// import Expenses from './04-router/router/expenses'
+// import Invoices from './04-router/router/invoices';
+// import Invoice from './04-router/router/invoice';
+// const root = ReactDOM.createRoot(document.getElementById('root'));
+// // root.render(<App/>);
+// root.render(
+//   <BrowserRouter>
+//  <Routes>
+//   <Route path="/" element={<App />}>
+//     <Route path="expenses" element={<Expenses />} />
+//     <Route path="invoices" element={<Invoices />} >
+//       {/**Index Routes */}
+//       <Route
+//       index
+//       element={
+//         <main style={{ padding: "1rem" }}>
+//         <p>Select an invoice</p>
+//       </main>
+//       }
+//       />
+//       <Route path=":invoiceId" element={<Invoice />}/>
+//     </Route>
+//     {/* 精确匹配 The "*" has special meaning here. It will match only when no other routes do. */}
+//     <Route
+//       path="*"
+//       element={
+//         <main style={{ padding: "1rem" }}>
+//           <p>There's nothing here!</p>
+//         </main>
+//       }
+//     />
+//   </Route>
+// </Routes>
+//   </BrowserRouter>
+// );
+
+import { BrowserRouter } from "react-router-dom";
+// import { HashRouter } from "react-router-dom";
+// import App from './04-router/AppRouter'
+import App from './04-router/App.js';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 // root.render(<App/>);
 root.render(
   <BrowserRouter>
- <Routes>
-  <Route path="/" element={<App />}>
-    <Route path="expenses" element={<Expenses />} />
-    <Route path="invoices" element={<Invoices />} >
-      {/**Index Routes */}
-      <Route
-      index
-      element={
-        <main style={{ padding: "1rem" }}>
-        <p>Select an invoice</p>
-      </main>
-      }
-      />
-      <Route path=":invoiceId" element={<Invoice />}/>
-    </Route>
-    {/* 精确匹配 The "*" has special meaning here. It will match only when no other routes do. */}
-    <Route
-      path="*"
-      element={
-        <main style={{ padding: "1rem" }}>
-          <p>There's nothing here!</p>
-        </main>
-      }
-    />
-  </Route>
-</Routes>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
   </BrowserRouter>
-);
 
+  )
+// root.render(
+//   <HashRouter>
+//     <React.StrictMode>
+//       <App />
+//     </React.StrictMode>
+//   </HashRouter>
+
+//   )
