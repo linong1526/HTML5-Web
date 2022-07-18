@@ -130,7 +130,8 @@ import './01-base/css/04.css' // y引入外部css样式
 import { BrowserRouter } from "react-router-dom";
 // import { HashRouter } from "react-router-dom";
 // import App from './04-router/AppRouter'
-import App from './04-router/App.js';
+// import App from './04-router/App.js';
+import App from './05-redux/App.js';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 // root.render(<App/>);
 root.render(
