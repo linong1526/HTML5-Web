@@ -17,9 +17,9 @@ export default function Detail(props) {
       store.dispatch(hide())
       return()=>{
         console.log("destroy")
-        store.dispatch(show() )
+        store.dispatch(show())
       }
-    })
+    },[])
     return (
     <div>Detail</div>
   )

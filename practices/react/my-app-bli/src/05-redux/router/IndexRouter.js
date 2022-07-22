@@ -7,6 +7,8 @@ import Cinemas from '../views/Cinemas'
 import Center from '../views/Center'
 import Detail from '../views/Detail'
 import Login from '../views/Login';
+import City from '../views/City';
+import Search from '../views/Search';
 function isAuth(){
   // F12 控制台输入模仿接口 localStorage.setItem("token","12345")
   return localStorage.getItem("token")
@@ -28,6 +30,7 @@ export default class App extends Component {
         <Route path='/' element={<Navigate replace to="/films" />} />
         <Route path='/films/*' element={<Films />} /> 
         <Route path='/cinemas' element={<Cinemas />} />
+        <Route path='/cinemas/search' element={<Search />} />
         {/* <Route path='/center' element={<Center />} /> */}
         {/* <Route path='/center' element={()=>{
           return isAuth()?<Center />:<Navigate replace to="/login" />
@@ -39,6 +42,7 @@ export default class App extends Component {
           }}/> */}
         <Route path="/center" element={ isAuth()?<Center myname="Iekika" {...this.props}/>:<Navigate replace to="/login"/>}/>
         <Route path="/login" element={<Login />} />
+        <Route path="/city" element={<City />} />
         {/* <Route path='/detail/:myid' element={<Detail/>}/> */}
         <Route path='/detail/:myid' element={<ValidateDetail/>}/>
         <Route path='*' element={<NotFound />} />

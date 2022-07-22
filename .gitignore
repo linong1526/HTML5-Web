@@ -3,6 +3,7 @@
 # dependencies
 node_modules
 /react/practices/my-app-bli/node_modules
+/react/practices/my-admin/node_modules
 /.pnp
 .pnp.js
 

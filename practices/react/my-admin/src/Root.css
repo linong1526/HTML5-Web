@@ -1,0 +1,50 @@
+@import '~antd/dist/antd.css';
+/* 首页 */
+#app>section, #app {
+    height: 100%;
+}
+
+#indexLayout .trigger {
+    padding: 0 24px;
+    font-size: 18px;
+    line-height: 64px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+#indexLayout .trigger:hover {
+    color: #1890ff;
+}
+
+#indexLayout .logo {
+    height: 72px;
+    background: rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+}
+
+#indexLayout .logo + ul {
+    height: 100%;
+}
+
+.site-layout .site-layout-background {
+    background: #fff;
+}
+
+.ant-layout-sider-children{
+    overflow: hidden;
+}
+
+/* 登录页 */
+.ant-form.ant-form-horizontal {
+    margin: 100px auto 0;
+}
+
+
+.ant-row.ant-form-item {
+    width: 400px;
+    margin: 10px auto 0;
+}
+
+.ant-form.ant-form-horizontal h2 {
+    text-align: center;
+}

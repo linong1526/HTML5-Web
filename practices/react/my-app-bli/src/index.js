@@ -128,19 +128,29 @@ import './01-base/css/04.css' // y引入外部css样式
 // );
 
 import { BrowserRouter } from "react-router-dom";
+import {Provider} from 'react-redux'
+// import store from './05-redux/redux/store';
+// import {store,persistor} from './06-react-redux/redux/store';
+import { PersistGate } from 'redux-persist/integration/react'  // 使用react-redux
 // import { HashRouter } from "react-router-dom";
 // import App from './04-router/AppRouter'
 // import App from './04-router/App.js';
-import App from './05-redux/App.js';
+// import App from './05-redux/App.js';
+// import App from './06-react-redux/App';
+import App from './08-antd-mobile/App';
+import {store,persistor} from './08-antd-mobile/redux/store';
 const root = ReactDOM.createRoot(document.getElementById('root'));
-// root.render(<App/>);
+root.render(<App/>);
 root.render(
   <BrowserRouter>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
+    {/* <React.StrictMode> */}
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <App />  
+        </PersistGate>
+      </Provider>
+    {/* </React.StrictMode> */}
   </BrowserRouter>
-
   )
 // root.render(
 //   <HashRouter>
@@ -148,5 +158,18 @@ root.render(
 //       <App />
 //     </React.StrictMode>
 //   </HashRouter>
+//   )
 
+
+// import 'antd/dist/antd.css'; // or 'antd/dist/antd.less' // 无法使用,版本问题
+// import "antd/dist/antd.min.css"
+// import App from './07-antd/ButtonApp';
+// import App from './07-antd/GridApp';
+// import App from './07-antd/LayoutApp';
+// import App from './07-antd/DropdownApp';
+// const root = ReactDOM.createRoot(document.getElementById('root'));
+// root.render(
+//     // <React.StrictMode>
+//       <App />
+//     // </React.StrictMode>
 //   )

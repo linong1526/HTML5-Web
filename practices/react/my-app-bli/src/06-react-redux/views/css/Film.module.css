@@ -1,0 +1,10 @@
+.active{
+  border-bottom: 1px solid red;
+  color:blue
+}
+:global(#Iekika){
+  background:red;
+}
+.film ul li{
+  list-style: none;
+}
