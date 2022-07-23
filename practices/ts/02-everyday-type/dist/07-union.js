@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * 联合类型
+ */
 function printId(id) {
     // 类型“string | number”上不存在属性“toUpperCase”。
     // 类型“number”上不存在属性“toUpperCase”。

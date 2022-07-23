@@ -1,3 +1,6 @@
+/**
+ * 类型别名
+ */
 type Point={
   x:number
   y:number

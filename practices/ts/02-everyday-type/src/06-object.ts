@@ -1,3 +1,7 @@
+/**
+ * 对象类型
+ */
+
 // 参数的类型注释是对象类型
 function printCoord(pt:{x:number;y:number}){
   console.log("坐标的x值为： " + pt.x); 

@@ -1,3 +1,6 @@
+/**
+ * 函数
+ */
 // function greet(name:string){
 //   console.log('hello' + name.toUpperCase() + "!!")
 // }

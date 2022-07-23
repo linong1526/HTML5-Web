@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * 对象类型
+ */
 // 参数的类型注释是对象类型
 function printCoord(pt) {
     console.log("坐标的x值为： " + pt.x);

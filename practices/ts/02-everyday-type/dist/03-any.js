@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * any
+ */
 let obj = {
     x: 10
 };

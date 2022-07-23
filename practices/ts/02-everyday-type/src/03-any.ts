@@ -1,3 +1,6 @@
+/**
+ * any
+ */
 let obj:any = {
   x:10
 }
