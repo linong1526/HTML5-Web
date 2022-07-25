@@ -784,7 +784,7 @@ function paLeft(padding:number | string,input:string):string{
 }
 ```
 
-我们来扩充一下功能：如果`padding`是·`number`,它会将其视为我们想要添加到`input`的空格·数·；如果`padding`是`string`，它只在`input`上做`padding`，让我们尝试实现：
+我们来扩充一下功能：如果`padding`是`number`,它会将其视为我们想要添加到`input`的空格·数·；如果`padding`是`string`，它只在`input`上做`padding`，让我们尝试实现：
 
 ```typescript
 function padLeft(padding:number | string,input:string){
@@ -1023,4 +1023,405 @@ logValue('hello ts') // HELLO TS
 ```
 
 ## 分配缩小
+
+正如我们之前提到的，当我们为任何变量赋值时，TypeScript会查看赋值的右侧并适当缩小左侧。
+
+```typescript
+// let x:string | number
+let x = Math.random() < 0.5 ? 10 : "hello world!";
+x=1;
+// let x:number
+console.log(x)
+
+x = "goodbye!"
+// let x:string
+console.log(x)
+```
+
+请注意，这些分配中的每一个都是有效的。即使在我们第一次赋值后观察到的类型` x `更改为 `number` ，我们仍然可以将 `string` 赋值给 `x` 。这是因为声明类型的 x -该类型 x 开始是 `string | number` 。
+
+如果我们分配了一个 boolean 给 x ，我们就会看到一个错误，因为它*不是声明类型的一部分*。 
+
+```typescript
+// let x: string | number 
+let x = Math.random() < 0.5 ? 10 : "hello world!"; 
+
+x = 1; 
+// let x: number
+console.log(x); 
+// 出错了！ 
+x = true; 
+// let x: string | number
+console.log(x);
+```
+
+## 控制流分析
+
+到目前为止，我们已经通过一些基本示例来说明 TypeScript 如何在特定分支中缩小范围。但是除了从每个变量中走出来，并在 if 、 while 、条件等中寻找类型保护之外，还有更多的事情要做。例如
+
+```typescript
+function padLeft(padding:number | string,input:string) {
+    if(typeof padding === 'number'){
+        return new Array(padding + 1).join(" ") + input
+    }
+    return padding + input
+}
+```
+
+padLeft 从其第一个 if 块中返回。TypeScript 能够分析这段代码，并看到在 padding 是数字的情况 下，主体的其余部分（ return padding + input; ）是不可达的。因此，它能够将数字从 padding 的类型中移除（从字符串|数字缩小到字符串），用于该函数的其余部分。 
+
+这种基于可达性的代码分析被称为控制流分析，TypeScript使用这种流分析来缩小类型，因为它遇到了类型守卫和赋值。当一个变量被分析时，控制流可以一次又一次地分裂和重新合并，该变量可以被观察到在每个点上有不同的类型。
+
+```typescript
+function example() { let x: string | number | boolean; x = Math.random() < 0.5;
+   // let x: boolean console.log(x); 
+   if (Math.random() < 0.5) { x = "hello"; 
+   // let x: string 
+         console.log(x); 
+    }else {
+        x = 100; 
+        // let x: number
+        console.log(x); 
+    }
+      // let x: string | number
+       return x;
+  }
+let x = example() 
+x = 'hello' 
+x = 100
+x = true // error
+```
+
+
+
+## 使用类型谓词
+
+到目前为止，我们已经用现有的JavaScript结构来处理窄化问题，然而有时你想更直接地控制整个代码中的类型变化。
+
+为了定义一个用户定义的类型保护，我们只需要定义一个函数，其返回类型是一个类型谓词。
+
+任何时候 isFish 被调用时，如果原始类型是兼容的，TypeScript将把该变量缩小到该特定类型。
+
+```typescript
+type Fish ={
+    name:string,
+    swim:()=>void
+}
+type Bird = {
+    name:string,
+    fly:()=>void
+}
+function ifFish(pet:Fish | Bird):pet is Fish{
+    return (pet as Fish).swim !== undefined
+}
+```
+
+在这个例子中，` pet is Fish` 是我们的`类型谓词`。**谓词的形式是 `parameterName is Type` **，其中`parameterName(参数名)` 必须是当前函数签名中的`参数名称`。
+
+任何时候`isFish`被调用时，如果原始类型是兼容的，TypeaScript将把该变量缩小到该特定类型。
+
+```typescript
+function getSmallPet():Fish | Bird{
+    let fish:Fish ={
+        name:'gold fish',
+        swim:()=>{
+            
+        }
+    }
+    let bird:Bird={
+        name:'sparrow',
+        fly:()=>{
+            
+        }
+    }
+    return true ? bird : fish
+}
+
+// 这里pet的swim和fly都可以访问了
+let pet = getSmallPet()
+if(isFish(pet)){
+    pet.swim()
+}else{
+    pet.fly()
+}
+```
+
+注意，TypeScript不仅知道` pet` 在` if` 分支中是一条鱼；它还知道在` else` 分支中，你没有一条` Fish `，所以你一定有一只 `Bird` 。 
+
+你可以使用类型守卫 `isFish`来过滤`Fish | Bird`的数组，获得`Fish`的数组。
+
+```typescript
+const zoo:(Fish | Bird)[] = [getSmallPet(),getSmallPet(),getSmallPet()]
+const underwater1:Fish[]=zoo.filter(isFish)
+// 或者，等同于
+const underWater2: Fish[] = zoo.filter(isFish) as Fish[]
+
+// 对于更复杂的例子，该谓词可能需要重复使用
+const underWatch3: Fish[] = zoo.filter((pet): pet is Fish => {
+    if(pet.name === 'frog'){
+        return false
+    }
+    return isFish(pet)
+}
+```
+
+## 受歧视的unions
+
+到目前为止，我们所看的大多数例子都是围绕着用简单的类型（如 string 、 boolean 和 number ）来缩小单个变量。虽然这很常见，但在JavaScript中，大多数时候我们要处理的是稍微复杂的结构。 
+
+为了激发灵感，让我们想象一下，我们正试图对圆形和方形等形状进行编码。圆记录了它们的半径，方记录了它们的边长。我们将使用一个叫做 kind 的字段来告诉我们正在处理的是哪种形状。这里是定义Shape 的第一个尝试。 
+
+```typescript
+interface Shape{
+    kind:"circle" | "square";
+    radius?:number,
+    sideLength?:number
+}
+```
+
+注意，我们使用的是字符串字面类型的联合。 "circle " 和 "square " 分别告诉我们应该把这个形状当作一个圆形还是方形。通过使用 "circle" | "square " 而不是 string ，我们可以避免拼写错误 的问题。 
+
+```typescript
+function handleShape(Shape:Shape){
+    // oops!
+    if(shape.kind === 'rect'){
+        //...
+    }
+}
+```
+
+我们可以编写一个`getArea`函数，根据它处理的是圆形还是方形来应用正确的逻辑。我们首先尝试处理圆形。
+
+```typescript
+function getArea(shape:Shape){
+    return Math.PI * shape.radius ** 2;// shape.radius 未定义
+}
+```
+
+在 `strictNullChecks `下，这给了我们一个错误——这是很恰当的，因为 `radius `可能没有被定义。但是如果我们对 `kind `属性进行适当的检查呢
+
+```typescript
+function getArea(shape: Shape) { 
+    if (shape.kind === "circle") { 
+        return Math.PI * shape.radius ** 2; // shape.radius 未定义
+    } 
+}
+```
+
+嗯，TypeScript 仍然不知道该怎么做。我们遇到了一个问题，即我们对我们的值比类型检查器知道的更多。我们可以尝试使用一个非空的断言 ( radius 后面的那个叹号` ! `) 来说明 radius 肯定存在。
+
+```typescript
+function getArea(shape: Shape) { 
+    if (shape.kind === "circle") { 
+        return Math.PI * shape.radius! ** 2;
+    } 
+}
+```
+
+但这感觉并不理想。我们不得不用那些非空的断言对类型检查器声明一个叹号（ ！ ），以说服它相信 `shape.radius` 是被定义的，但是如果我们开始移动代码，这些断言就容易出错。此外，在 `strictNullChecks` 之外，我们也可以意外地访问这些字段（因为在读取这些字段时，可选属性被认为总是存在的）。我们绝对可以做得更好。 
+
+`Shape` 的这种编码的问题是，类型检查器没有办法根据种类属性知道` radius` 或 `sideLength` 是否存在。我们需要把我们知道的东西传达给类型检查器。考虑到这一点，让我们再来定义一下Shape。 
+
+```typescript
+interface Circle {
+    kind:"circle",
+    radius:number
+}
+interface Square {
+    kind:"square",
+    sideLength:number
+}
+type Shape = Circle | Square
+```
+
+在这里，我们正确地将 `Shape` 分成了两种类型，为` kind` 属性设置了不同的值，但是 `radius` 和 `sideLength` 在它们各自的类型中被声明为必需的属性。 
+
+让我们看看当我们试图访问 Shape 的半径时会发生什么。
+
+```typescript
+function getArea(shape: Shape) { 
+    return Math.PI * shape.radius ** 2; // 类型Shape上不存在属性radius
+}
+```
+
+就像我们对 `Shape` 的第一个定义一样，这仍然是一个错误。当半径是可选的时候，我们得到了一个错误（仅在 `strictNullChecks `中），因为 TypeScript 无法判断该属性是否存在。现在 `Shape` 是一个联 合体，TypeScript 告诉我们` shape `可能是一个` Square` ，而`Square`并没有定义半径 `radius` 。 这两种解释都是正确的，但只有我们对 `Shape` 的新编码仍然在 `strictNullCheck`s 之外导致错误。 
+
+但是，如果我们再次尝试检查kind属性呢？ 
+
+```typescript
+function getArea(shape: Shape) { 
+    if (shape.kind === "circle") { 
+        // shape: Circle 
+        return Math.PI * shape.radius ** 2; 
+    }
+}
+```
+
+这就摆脱了错误! 当` union` 中的每个类型都包含一个与字面类型相同的属性时，TypeScript 认为这是一个有区别的` union` ，并且可以缩小` union` 的成员。 
+
+在这种情况下， kind 就是那个共同属性（这就是 Shape 的判别属性）。检查 `kind` 属性是否为 `"circle"` ，就可以剔除 `Shape` 中所有没有` "circle"` 类型属性的类型。这就把 `Shape` 的范围缩小到 了`Circle `这个类型。 
+
+同样的检查方法也适用于` switch` 语句。现在我们可以试着编写完整的 `getArea` ，而不需要任何讨厌的叹号` ！` 非空的断言。 
+
+```typescript
+function getArea(shape:Shape){
+    switch(shape.kind){
+        // shape:Circle
+        case "circle":
+            return Math.PI * shape.radius ** 2
+        
+        // shape：Square
+        case "square":
+            return shape.sideLength ** 2
+    }
+}
+```
+
+这里最重要的是 Shape 的编码。向 TypeScript 传达正确的信息是至关重要的，这个信息就是 `Circle` 和 `Square` 实际上是具有特定种类字段的两个独立类型。这样做让我们写出类型安全的TypeScript代码，看起来与我们本来要写的JavaScript没有区别。从那里，类型系统能够做 "正确 "的事情，并找出我们 `switch` 语句的每个分支中的类型。 
+
+> 作为一个旁观者，试着玩一玩上面的例子，去掉一些返回关键词。你会发现，类型检查可以帮助避免在switch语句中不小心落入不同子句的bug。 
+
+辨证的联合体不仅仅适用于谈论圆形和方形。它们适合于在JavaScript中表示任何类型的消息传递方案，比如在网络上发送消息（ client/server 通信），或者在状态管理框架中编码突变。
+
+## never 类型与穷尽性检查
+
+在缩小范围时，你可以将一个联合体的选项减少到你已经删除了所有的可能性并且什么都不剩的程度。
+
+在这些情况下，TypeScript将使用一个` never` 类型来代表一个不应该存在的状态。
+
+`never` 类型可以分配给每个类型；但是，没有任何类型可以分配给`never`（除了never本身）。这意味 
+
+着你可以使用缩小并依靠` never`的出现在` switch` 语句中做详尽的检查。 
+
+例如，在我们的 `getArea` 函数中添加一个默认值，试图将形状分配给 `never` ，当每个可能的情况都没有 
+
+被处理时，就会引发。 
+
+```typescript
+type Shape = Circle | Square;
+function getArea(shape: Shape) { 
+    switch (shape.kind) { 
+        case "circle": 
+            return Math.PI * shape.radius ** 2; 
+        case "square":
+            return shape.sideLength ** 2; 
+        default:
+            const _exhaustiveCheck: never = shape; 
+            return _exhaustiveCheck; 
+    } 
+}
+```
+
+在 Shape 联盟中添加一个新成员，将导致TypeScript错误。 
+
+```typescript
+interface Triangle { 
+    kind: "triangle";
+    sideLength: number; 
+}
+type Shape = Circle | Square | Triangle; 
+
+function getArea(shape: Shape) { 
+    switch (shape.kind) { 
+        case "circle": 
+            return Math.PI * shape.radius ** 2; 
+        case "square":
+            return shape.sideLength ** 2; 
+        default:
+            const _exhaustiveCheck: never = shape; // 报错 不能将类型“trangle"分配给类型 never
+            return _exhaustiveCheck; 
+    } 
+}
+```
+
+## 函数更多
+
+函数是任何应用程序的基本构件，无论它们是本地函数，从另一个模块导入，还是一个类上的方法。它们也是值，就像其他值一样，TypeScript有很多方法来描述如何调用函数。让我们来学习一下如何编写描述函数的类型。
+
+### 函数类型表达式
+
+描述一个函数的最简单方法是用一个函数类型表达式，这些类型在语法上类似于箭头函数。
+
+```typescript
+function greeter (fn:(a:string)=>void){
+    fn("hello world")
+}
+function printToConsole(s:string){
+    console.log(s)
+}
+greeter(printToConsole)
+```
+
+语法` (a: string) => void` 意味着 "有一个参数的函数，名为` a` ，类型为字符串，没有返回值"。就像 
+
+函数声明一样，如果没有指定参数类型，它就隐含为` any` 类型。 
+
+当然，我们可以用一个类型别名来命名一个函数类型。
+
+```typescript
+type GreetFunction = (a:string)=>void;
+function greete(fn:GreetFunction){
+    //...
+}
+```
+
+### 调用签名
+
+在JavaScript中，除了可调用之外，函数还可以有属性。然而，函数类型表达式的语法不允许声明属性。 
+
+如果我们想用属性来描述可调用的东西，我们可以在一个对象类型中写一个调用签名。 
+
+```typescript
+type DescribableFunction = {
+    description:string;
+    (someArg:number):boolean;
+}
+function doSomething(fn:DescribaleFunction){
+    console.log(fn.description + " returned " + fn(6));
+}
+function fn1() { 
+    return true
+}
+fn1.description = 'balabala...'
+doSomething(fn1)
+
+```
+
+注意，与函数类型表达式相比，语法略有不同：在参数列表和返回类型之间使用` :` 而不是` =>` 。 
+
+### 构造签名
+
+JavaScript函数也可以用 `new` 操作符来调用。TypeScript将这些称为构造函数，因为它们通常会创建一个新的对象。你可以通过在调用签名前面添加 `new` 关键字来写一个构造签名。
+
+```typescript
+class Ctor {
+    s:string
+    constructor(s:string){
+        this.s = s
+    }
+}
+type SomeConstructor = {
+    new (s:string):Ctor
+}
+function fn(ctor: SomeConstructor) { 
+    return new ctor("hello") 
+}
+const f = fn(Ctor) 
+console.log(f.s)
+```
+
+有些对象，如 JavaScript 的 Date 对象，可以在有 new 或没有 new 的情况下被调用。你可以在同一类型中任意地结合调用和构造签名。
+
+```typescript
+interface CalloConstruct {
+    new (s:string):Date
+    (n?:number):number
+}
+function fn(date:CallorConstruct){
+    let d = new date('2021-11-20')
+    let n = date(100)
+}
+```
+
+再举一个例子：
 
