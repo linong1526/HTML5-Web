@@ -743,6 +743,8 @@ console.log(Direction.Up);
 
 ## 不太常见的原语
 
+![](TypeScript.assets/4aa06691849a82a676d2ff7f964537c3b03863bb.png)
+
 值得一提的是JavaScript中一些较新的原语，它们在TypeScript类型系统中也实现了。我们先简单看两个例子：
 
 * bigint
@@ -833,7 +835,7 @@ TypeScript 可以理解几种不同的缩小结构。
 ```typescript
 function printAll(strs:string | string[] | null){
     if(typeof strs === "object"){
-        for(const s of strs){
+        for(const s of strs){ //报错 strs对象可能为 "null"
             console.log(s)
         }
     }else if(typeof strs === "string"){
@@ -844,7 +846,7 @@ function printAll(strs:string | string[] | null){
 }
 ```
 
-在 printAll 函数中，我们尝试检查 strs 是否为对象，来代替检查它是否为数组类型（现在可能是强调数组是 JavaScript 中的对象类型的好时机）。但事实证明，在 JavaScript 中， `typeof null` 实际上也是 "object" ! 这是历史上的不幸事故之一。 
+在 printAll 函数中，我们尝试检查 strs 是否为对象，来代替检查它是否为数组类型（现在可能是强调数组是 JavaScript 中的对象类型的好时机）。但事实证明，在 JavaScript 中， `typeof null` 实际上也是 `"object"` ! 这是历史上的不幸事故之一。 
 
 有足够经验的用户可能不会感到惊讶，但并不是每个人都在 JavaScript 中遇到过这种情况；幸运的是，typescript 让我们知道， strs 只缩小到 `string[] | null `，而不仅仅是 `string[]` 。
 
@@ -880,7 +882,7 @@ Boolean("hello"); // type: boolean, value: true
 !!"world"; // type: true, value: true
  ```
 
-利用这种行为是相当流行的，尤其是在防范诸如 null 或 undefined 之类的值时。例如，让我们尝试将它用于我们的 printAll 函数。 
+利用这种行为是相当流行的，尤其是在防范诸如 `null 或 undefined `之类的值时。例如，让我们尝试将它用于我们的 printAll 函数。 
 
 ```typescript
 function printAll(str:string | string[] |null){
@@ -901,7 +903,7 @@ function printAll(str:string | string[] |null){
 TypeError: null is not iterable
 ```
 
-但请记住，对原语的真值检查通常容易出错。例如，考虑改写 printAll :
+<font color= \#00A600 >但请记住，对原语的真值检查通常容易出错。</font>例如，考虑改写 printAll :
 
 ```typescript
 function printAll(strs: string | string[] | null) {
@@ -987,9 +989,11 @@ function multiplyValue(container: Container, factor: number) {
 
 ## in操作符缩小
 
+![](TypeScript.assets/579e8b1a947742f6a8378fbe46233cf35a5ffc0a.png)
+
 JavaScript 有一个运算符，用于确定对象是否具有某个名称的属性： in 运算符。TypeScript 考虑到了这一点，以此来缩小潜在类型的范围。
 
-例如，使用代码： "value" in x 。这里的 "value" 是字符串文字， x 是联合类型。值为“true”的分支缩小，需要 x 具有可选或必需属性的类型的值；值为 “false” 的分支缩小，需要具有可选或缺失属性的类型的值。 
+例如，使用代码：` "value" in x` 。这里的 `"value"` 是字符串文字， `x` 是联合类型。值为`“true”`的分支缩小，需要` x` 具有可选或必需属性的类型的值；值为 `“false”` 的分支缩小，需要具有可选或缺失属性的类型的值。 
 
 ```typescript
 type Fish = { swim:()=>void}
@@ -1424,4 +1428,52 @@ function fn(date:CallorConstruct){
 ```
 
 再举一个例子：
+
+```typescript
+interface ClockConstructor {
+    new (hour:number,minute:number): ClockInterface;
+}
+interface ClockInterface {
+    trick():void
+}
+function createClock(
+   ctor: ClockConstructor,
+   hour: number,
+   minute: number
+): ClockInterface {
+       return new ctor(hour,mintue)
+}
+class DigitalClock implements ClockInterface {
+    constructor(h: number, m: number) {}
+    tick() { 
+        console.log("beep beep"); 
+    } 
+}
+class AnalogClock implements ClockInterface { 
+    constructor(h: number, m: number) {} 
+    tick() { 
+        console.log("tick tock"); 
+    } 
+}
+```
+
+## 泛型函数
+
+在写一个函数时，输入的类型与输出的类型有关，或者两个输入的类型以某种方式相关，这是常见的。让我们考虑一下一个返回数组中第一个元素的函数。 
+
+```typescript
+function firstElment(arr:any[]){
+    return arr[0]
+}
+```
+
+这个函数完成了它的工作，但不幸的是它的返回类型是 any 。如果该函数返回数组元素的类型会更好。
+
+在TypeScript中，当我们想描述两个值之间的对应关系时，会使用泛型。我们通过在函数签名中声明一个类型参数来做到这一点：  
+
+```typescript
+function firstElement<Type>(arr: Type[]): Type | undefined {
+    return arr[0]; 
+}
+```
 
